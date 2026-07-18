@@ -1,80 +1,103 @@
-# ForgeMinds — Architecture
+# ForgeMinds — Architecture Documentation
 
 ## System Overview
 
-ForgeMinds is a multi-tier application with the following layers:
+ForgeMinds is built on a modern, async-first microservices architecture designed for industrial-scale document intelligence.
 
-1. **Client Layer** — React SPA (Progressive Web App)
-2. **API Gateway** — FastAPI with JWT authentication
-3. **Core Services** — Document ingestion, entity extraction, knowledge graph management
-4. **AI Services** — RAG pipeline, multi-agent orchestration, specialized agents
-5. **Data Layer** — PostgreSQL, Neo4j, Qdrant, Redis
+## Architecture Diagram
 
-## Data Flow
+![Architecture](images/architecture.jpg)
 
-### Document Ingestion Pipeline
+## Layered Architecture
 
+### Presentation Layer (Frontend)
+- **React 18** with Vite build system
+- Premium dark theme with glassmorphism effects
+- 14 interactive pages, 30+ reusable components
+- Real-time state management via React hooks
+- Force-directed graph visualization (react-force-graph)
+- Charts and analytics (Recharts)
+
+### API Layer (FastAPI)
+- Async REST API with automatic OpenAPI documentation
+- JWT-based authentication with bcrypt password hashing
+- Request validation via Pydantic v2 models
+- CORS middleware with configurable origins
+- Lifespan-managed database connections
+
+### Service Layer (Business Logic)
+- **14 service modules** organized by domain responsibility
+- Shared interfaces (Pydantic models) ensure type safety
+- Agent orchestrator routes queries to specialized AI agents
+- RAG pipeline assembles context from 3 retrieval sources
+
+### Data Layer (Multi-Database)
+| Database | Purpose | Client |
+|----------|---------|--------|
+| PostgreSQL | Relational data (users, documents, equipment) | asyncpg |
+| Neo4j | Knowledge graph (entities, relationships) | neo4j-driver |
+| Qdrant | Vector embeddings (semantic search) | qdrant-client |
+| Redis | Caching (sessions, queries) | aioredis |
+
+## AI Pipeline
+
+![AI Pipeline](images/ai_pipeline.jpg)
+
+### Multi-Agent System
 ```
-Upload → Type Detection → Text Extraction (OCR/pdfplumber)
-    → Chunking → Entity Extraction → [Parallel]
-        → Embedding Generation → Qdrant (Vector Store)
-        → Knowledge Graph Update → Neo4j (Graph DB)
-    → Metadata Storage → PostgreSQL
+User Query → Intent Classification → Agent Selection
+                                         │
+         ┌──────────┬──────────┬─────────┴──────────┐
+         ▼          ▼          ▼                     ▼
+    Maintenance  Compliance   RCA            Lessons Learned
+      Agent       Agent      Agent               Agent
+         │          │          │                     │
+         └──────────┴──────────┴─────────────────────┘
+                              │
+                    Hybrid Context Retrieval
+                   (Vector + Graph + Keyword)
+                              │
+                    Gemini LLM Generation
+                              │
+                  Response + Citations + Confidence
 ```
 
-### Query Processing Pipeline
+## Knowledge Graph
 
+![Knowledge Graph](images/knowledge_graph.jpg)
+
+### Entity-Relationship Model
 ```
-User Query → Intent Classification → Agent Routing
-    → [Parallel Retrieval]
-        → Vector Search (Qdrant)
-        → Graph Traversal (Neo4j)
-        → Keyword Search (PostgreSQL)
-    → Context Fusion & Re-ranking
-    → Specialized Agent Processing
-    → Response Generation with Citations
+(:Equipment)-[:MAINTAINED_BY]->(:Person)
+(:Document)-[:MENTIONS]->(:Equipment)
+(:Equipment)-[:COMPLIANT_WITH]->(:Regulation)
+(:Equipment)-[:FAILED_ON]->(:FailureMode)
+(:Document)-[:REFERENCES]->(:Regulation)
+(:Equipment)-[:LOCATED_AT]->(:Location)
 ```
 
-## Component Responsibilities
+## Database Schema
 
-### Document Intelligence (Rudra)
-- File upload and storage
-- OCR pipeline (Tesseract + pdfplumber)
-- Text chunking with semantic awareness
-- Entity extraction (equipment tags, dates, regulations, personnel)
-- Knowledge graph CRUD (Neo4j)
-- Document and equipment APIs
+![Database Architecture](images/database.jpg)
 
-### AI Engine (Harsh)
-- Embedding generation (sentence-transformers)
-- Hybrid search (vector + keyword + graph)
-- RAG pipeline (retrieve → re-rank → generate)
-- Agent orchestrator (intent → route → aggregate)
-- Specialized agents: Maintenance, Compliance, RCA, Lessons Learned
-- Chat session management
+### PostgreSQL Tables
+- `users` — Authentication and user management
+- `documents` — Document metadata and processing status
+- `document_chunks` — Text chunks for RAG retrieval
+- `equipment` — Industrial equipment registry
+- `work_orders` — Maintenance work orders
+- `maintenance_records` — Historical maintenance data
+- `compliance_records` — Regulatory compliance records
+- `chat_history` — AI conversation logs
+- `audit_logs` — System activity tracking
+- `search_history` — Search query analytics
 
-### Frontend (Dil)
-- React SPA with dark-theme design system
-- Dashboard with system statistics
-- Document management (upload, browse, view)
-- Knowledge Copilot (chat with citations)
-- Knowledge Graph explorer (interactive visualization)
-- Maintenance & Compliance dashboards
-- Analytics views
+## Workflow
 
-## Database Architecture
-
-| Database | Purpose | Key Data |
-|----------|---------|----------|
-| **PostgreSQL** | Primary relational store | Users, documents, equipment, work orders, chat history |
-| **Neo4j** | Knowledge graph | Entities, relationships, graph traversals |
-| **Qdrant** | Vector similarity search | Document chunk embeddings |
-| **Redis** | Cache and queue | LLM response cache, session data, task queue |
+![Workflow](images/workflow.jpg)
 
 ## Security
-
-- JWT-based authentication with role-based access control
-- File upload validation (type, size)
-- Parameterized queries (SQLAlchemy)
-- CORS restricted to frontend origin
-- Environment-based secrets management
+- JWT tokens with configurable expiry (default: 24h)
+- bcrypt password hashing with salt
+- Auth dependency injection on all protected endpoints
+- CORS protection with configurable origins

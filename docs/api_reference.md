@@ -1,252 +1,323 @@
 # ForgeMinds — API Reference
 
-> Auto-generated Swagger docs available at: http://localhost:8000/docs
+> **Base URL:** `http://localhost:8000`  
+> **Interactive Docs:** `http://localhost:8000/docs` (Swagger UI)  
+> **Alternative Docs:** `http://localhost:8000/redoc` (ReDoc)
 
-## Base URL
-
-```
-http://localhost:8000/api
-```
+---
 
 ## Authentication
 
-All endpoints (except `/auth/login` and `/auth/register`) require a Bearer token:
-
+All protected endpoints require a JWT Bearer token in the `Authorization` header:
 ```
-Authorization: Bearer <jwt_token>
+Authorization: Bearer <token>
 ```
 
----
+### Register
+```http
+POST /api/auth/register
+Content-Type: application/json
 
-## Auth Endpoints
+{
+  "email": "user@example.com",
+  "password": "securePassword123",
+  "full_name": "John Doe"
+}
+```
+**Response:** `201 Created` — Returns user profile
 
-### POST /api/auth/login
-Login and receive JWT token.
+### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
 
-**Request:**
+{
+  "email": "user@example.com",
+  "password": "securePassword123"
+}
+```
+**Response:** `200 OK` — Returns JWT token
 ```json
-{ "email": "string", "password": "string" }
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "bearer"
+}
 ```
 
-**Response (200):**
+### Get Current User
+```http
+GET /api/auth/me
+Authorization: Bearer <token>
+```
+**Response:** `200 OK` — Returns user profile
+
+---
+
+## Documents
+
+### Upload Document
+```http
+POST /api/documents/upload
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+file: <binary>
+category: "inspection_report"
+```
+**Response:** `201 Created` — Returns document ID and processing status
+
+### List Documents
+```http
+GET /api/documents?page=1&limit=20&category=inspection_report&status=completed&search=pump
+Authorization: Bearer <token>
+```
+**Response:** `200 OK` — Paginated document list
+
+### Get Document Details
+```http
+GET /api/documents/{document_id}
+Authorization: Bearer <token>
+```
+**Response:** `200 OK` — Full document details with extracted entities
+
+### Delete Document
+```http
+DELETE /api/documents/{document_id}
+Authorization: Bearer <token>
+```
+**Response:** `204 No Content`
+
+### Get Document Entities
+```http
+GET /api/documents/{document_id}/entities
+Authorization: Bearer <token>
+```
+**Response:** `200 OK` — List of extracted entities
+
+---
+
+## Search
+
+### Hybrid Search
+```http
+POST /api/search
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "query": "bearing failures in pumps",
+  "search_type": "hybrid",
+  "limit": 10,
+  "filters": {
+    "category": "maintenance_record",
+    "date_range": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    }
+  }
+}
+```
+**Response:** `200 OK` — Ranked search results with relevance scores
+
+---
+
+## AI Chat
+
+### Send Message
+```http
+POST /api/chat
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "message": "What maintenance is recommended for Pump P-101?",
+  "session_id": "optional-session-uuid"
+}
+```
+**Response:** `200 OK`
 ```json
-{ "access_token": "string", "token_type": "bearer", "user": { ... } }
+{
+  "response": "Based on inspection reports...",
+  "agent_type": "maintenance",
+  "confidence": 0.87,
+  "citations": [
+    {"document_id": "...", "title": "INS-2024-001", "relevance": 0.95}
+  ],
+  "session_id": "..."
+}
 ```
 
-### POST /api/auth/register
-Register a new user.
+### Get Chat History
+```http
+GET /api/chat/history/{session_id}
+Authorization: Bearer <token>
+```
 
-**Request:**
+### List Chat Sessions
+```http
+GET /api/chat/sessions?page=1&limit=10
+Authorization: Bearer <token>
+```
+
+---
+
+## Knowledge Graph
+
+### Query Nodes
+```http
+GET /api/knowledge-graph/nodes?entity_type=equipment&search=P-101&limit=50
+Authorization: Bearer <token>
+```
+
+### Get Node with Connections
+```http
+GET /api/knowledge-graph/nodes/{node_id}
+Authorization: Bearer <token>
+```
+
+### Get Subgraph
+```http
+GET /api/knowledge-graph/subgraph/{node_id}?depth=2
+Authorization: Bearer <token>
+```
+
+### Graph Statistics
+```http
+GET /api/knowledge-graph/stats
+Authorization: Bearer <token>
+```
+
+---
+
+## Maintenance
+
+### Get Failure Predictions
+```http
+GET /api/maintenance/predictions?equipment_id=P-101&criticality=high
+Authorization: Bearer <token>
+```
+
+### Run Root Cause Analysis
+```http
+POST /api/maintenance/rca
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "equipment_id": "P-101",
+  "failure_description": "Unusual vibration detected during operation"
+}
+```
+
+### Get Proactive Alerts
+```http
+GET /api/maintenance/alerts
+Authorization: Bearer <token>
+```
+
+---
+
+## Compliance
+
+### Get Compliance Overview
+```http
+GET /api/compliance/status
+Authorization: Bearer <token>
+```
+
+### Detect Gaps
+```http
+GET /api/compliance/gaps
+Authorization: Bearer <token>
+```
+
+### Run Assessment
+```http
+POST /api/compliance/assess
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "regulation_code": "ASME_B31_3",
+  "equipment_ids": ["P-101", "V-200"]
+}
+```
+
+### Get Evidence Package
+```http
+GET /api/compliance/evidence-package/{regulation_code}
+Authorization: Bearer <token>
+```
+
+---
+
+## Analytics
+
+### Dashboard Overview
+```http
+GET /api/analytics/overview
+Authorization: Bearer <token>
+```
+
+### Trend Data
+```http
+GET /api/analytics/trends?metric=document_processing&period=30d
+Authorization: Bearer <token>
+```
+
+---
+
+## Equipment
+
+### List Equipment
+```http
+GET /api/equipment?type=pump&status=active&criticality=high&page=1&limit=20
+Authorization: Bearer <token>
+```
+
+### Get Equipment Details
+```http
+GET /api/equipment/{equipment_id}
+Authorization: Bearer <token>
+```
+
+### Maintenance History
+```http
+GET /api/equipment/{equipment_id}/maintenance-history
+Authorization: Bearer <token>
+```
+
+---
+
+## Health Check
+
+```http
+GET /api/health
+```
+**Response:** `200 OK`
 ```json
-{ "email": "string", "password": "string", "full_name": "string", "role": "viewer", "department": "string" }
+{
+  "status": "healthy",
+  "version": "1.0.0"
+}
 ```
 
-**Response (201):** `UserResponse`
-
-### GET /api/auth/me
-Get current authenticated user.
-
-**Response (200):** `UserResponse`
-
 ---
 
-## Document Endpoints
+## Error Responses
 
-### POST /api/documents/upload
-Upload a document for processing.
-
-**Request:** `multipart/form-data` — `file` (binary), `category` (string, optional)
-
-**Response (201):** `DocumentUploadResponse`
-
-### GET /api/documents
-List documents with pagination and filters.
-
-**Query Params:** `page`, `limit`, `category`, `status`, `search`
-
-**Response (200):** `PaginatedResponse<DocumentResponse>`
-
-### GET /api/documents/{document_id}
-Get full document detail.
-
-**Response (200):** `DocumentDetailResponse`
-
-### DELETE /api/documents/{document_id}
-Delete a document.
-
-**Response (204):** No Content
-
-### GET /api/documents/{document_id}/entities
-Get entities extracted from a document.
-
-**Response (200):** `{ "entities": [EntityBrief] }`
-
-### GET /api/documents/{document_id}/status
-Poll document processing status.
-
-**Response (200):** `DocumentStatusResponse`
-
----
-
-## Search Endpoint
-
-### POST /api/search
-Hybrid search across all documents.
-
-**Request:**
+All errors follow a consistent format:
 ```json
-{ "query": "string", "search_type": "hybrid", "filters": { ... }, "limit": 10 }
+{
+  "detail": "Error description"
+}
 ```
 
-**Response (200):** `SearchResponse`
-
----
-
-## Chat Endpoints
-
-### POST /api/chat
-Send a message to the knowledge copilot.
-
-**Request:**
-```json
-{ "message": "string", "session_id": "optional", "agent_type": "auto", "context_filters": { ... } }
-```
-
-**Response (200):** `ChatResponse`
-
-### GET /api/chat/history/{session_id}
-Get chat history for a session.
-
-**Response (200):** `{ "messages": [ChatMessageResponse] }`
-
-### GET /api/chat/sessions
-List all chat sessions.
-
-**Query Params:** `page`, `limit`
-
-**Response (200):** `{ "sessions": [SessionBrief] }`
-
----
-
-## Knowledge Graph Endpoints
-
-### GET /api/knowledge-graph/nodes
-List knowledge graph nodes.
-
-**Query Params:** `entity_type`, `search`, `limit`
-
-**Response (200):** `{ "nodes": [GraphNode] }`
-
-### GET /api/knowledge-graph/nodes/{node_id}
-Get a single node with connections.
-
-**Response (200):** `GraphNode`
-
-### GET /api/knowledge-graph/subgraph/{node_id}
-Get subgraph around a node.
-
-**Query Params:** `depth` (default: 2, max: 3)
-
-**Response (200):** `SubgraphResponse`
-
-### GET /api/knowledge-graph/stats
-Get knowledge graph statistics.
-
-**Response (200):** `KGStatsResponse`
-
----
-
-## Equipment Endpoints
-
-### GET /api/equipment
-List equipment with filters.
-
-**Query Params:** `type`, `status`, `criticality`, `search`, `page`, `limit`
-
-**Response (200):** `PaginatedResponse<EquipmentResponse>`
-
-### GET /api/equipment/{equipment_id}
-Get full equipment detail (digital twin).
-
-**Response (200):** `EquipmentDetailResponse`
-
-### GET /api/equipment/{equipment_id}/maintenance-history
-Get maintenance history for equipment.
-
-**Response (200):** `{ "records": [...] }`
-
-### GET /api/equipment/{equipment_id}/failure-history
-Get failure history for equipment.
-
-**Response (200):** `{ "events": [...] }`
-
----
-
-## Maintenance Intelligence Endpoints
-
-### GET /api/maintenance/predictions
-Get predictive maintenance recommendations.
-
-**Query Params:** `equipment_id`, `criticality`
-
-**Response (200):** `{ "predictions": [MaintenancePrediction] }`
-
-### POST /api/maintenance/rca
-Request root cause analysis.
-
-**Request:**
-```json
-{ "equipment_id": "string", "failure_description": "string", "failure_date": "date" }
-```
-
-**Response (200):** `RCAResponse`
-
-### GET /api/maintenance/alerts
-Get proactive alerts.
-
-**Response (200):** `{ "alerts": [ProactiveAlert] }`
-
----
-
-## Compliance Endpoints
-
-### GET /api/compliance/status
-Get overall compliance status.
-
-**Response (200):** `ComplianceOverview`
-
-### GET /api/compliance/gaps
-Get identified compliance gaps.
-
-**Response (200):** `{ "gaps": [ComplianceGap] }`
-
-### POST /api/compliance/assess
-Trigger compliance assessment.
-
-**Request:**
-```json
-{ "regulation_code": "string", "equipment_ids": ["string"] }
-```
-
-**Response (200):** Assessment results.
-
-### GET /api/compliance/evidence-package/{regulation_code}
-Generate compliance evidence package.
-
-**Response (200):** Evidence package.
-
----
-
-## Analytics Endpoints
-
-### GET /api/analytics/overview
-Get analytics dashboard data.
-
-**Response (200):** `AnalyticsOverview`
-
-### GET /api/analytics/trends
-Get trend data for a metric.
-
-**Query Params:** `metric`, `period` ('7d', '30d', '90d')
-
-**Response (200):** Time-series data.
+| Status Code | Meaning |
+|------------|---------|
+| `400` | Bad Request — Invalid input |
+| `401` | Unauthorized — Missing or invalid token |
+| `403` | Forbidden — Insufficient permissions |
+| `404` | Not Found — Resource doesn't exist |
+| `422` | Validation Error — Invalid request body |
+| `500` | Internal Server Error |

@@ -1,118 +1,165 @@
-# ForgeMinds — Setup Guide
+# ForgeMinds — Deployment Guide
 
-## Prerequisites
+## Cloud Deployment Architecture
 
-- **Docker Desktop** (v4.0+) — [Download](https://www.docker.com/products/docker-desktop/)
-- **Python 3.11+** — [Download](https://www.python.org/downloads/)
-- **Node.js 18+** — [Download](https://nodejs.org/)
-- **Git** — [Download](https://git-scm.com/)
-- **Gemini API Key** (free) — [Get Key](https://aistudio.google.com/apikey)
-
-## Step 1: Clone & Configure
-
-```bash
-git clone <repository-url>
-cd forgeminds
-
-# Copy and edit environment file
-cp .env.example .env
-# Edit .env — at minimum set GEMINI_API_KEY
+```
+┌─────────────────┐     ┌─────────────────┐
+│   Vercel/        │────▶│   Render/        │
+│   Netlify        │     │   Railway        │
+│   (Frontend)     │     │   (Backend API)  │
+└─────────────────┘     └───────┬─────────┘
+                                │
+                    ┌───────────┼───────────┐
+                    ▼           ▼           ▼
+            ┌──────────┐ ┌──────────┐ ┌──────────┐
+            │   Neon    │ │  Neo4j   │ │  Qdrant  │
+            │ Postgres  │ │  Aura    │ │  Cloud   │
+            └──────────┘ └──────────┘ └──────────┘
+                                           ▲
+                                    ┌──────┘
+                              ┌──────────┐
+                              │  Redis   │
+                              │  Cloud   │
+                              └──────────┘
 ```
 
-## Step 2: Start Infrastructure (Docker)
+---
 
-```bash
-# Start all database services
-docker compose up -d postgres neo4j qdrant redis
+## Option A: Frontend on Vercel
 
-# Verify services are running
-docker compose ps
+### Steps
 
-# Expected: all 4 services "running" / "healthy"
-```
+1. **Install Vercel CLI**
+   ```bash
+   npm install -g vercel
+   ```
 
-### Service Access Points
+2. **Deploy Frontend**
+   ```bash
+   cd frontend
+   vercel --prod
+   ```
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| PostgreSQL | localhost:5432 | forgeminds / forgeminds_dev |
-| Neo4j Browser | http://localhost:7474 | neo4j / forgeminds_dev |
-| Qdrant Dashboard | http://localhost:6333/dashboard | — |
-| Redis | localhost:6379 | — |
+3. **Configure Environment Variables** in Vercel Dashboard:
+   ```
+   VITE_API_URL=https://your-backend-url.onrender.com
+   ```
 
-## Step 3: Backend Setup
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Activate (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r backend/requirements.txt
-
-# Start the backend server
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Verify: Open http://localhost:8000/docs to see Swagger UI.
-
-## Step 4: Frontend Setup
+### Alternative: Netlify
 
 ```bash
 cd frontend
-npm install
-npm run dev
+npm run build
+netlify deploy --prod --dir=dist
 ```
 
-Verify: Open http://localhost:5173 to see the app.
+---
 
-## Step 5: Seed Data (Optional)
+## Option B: Backend on Render
+
+### Steps
+
+1. **Create a new Web Service** on [render.com](https://render.com)
+
+2. **Connect GitHub repository** → Select `Shashank696/ForgeMinds`
+
+3. **Build Settings:**
+   - **Root Directory:** `backend`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+   - **Python Version:** 3.11
+
+4. **Environment Variables:** (Set all from `.env.example`)
+
+### Alternative: Railway
 
 ```bash
-# Activate venv first, then from project root:
-python scripts/seed_db.py
+railway login
+railway init
+railway up
 ```
 
-## Common Issues
+---
 
-### Port Conflicts
+## Database Setup
 
-If a port is already in use, stop the conflicting service or change the port in `docker-compose.yml` and `.env`.
+### Neon PostgreSQL (Free Tier)
 
-### Docker Memory
+1. Sign up at [neon.tech](https://neon.tech)
+2. Create a new project: `forgeminds`
+3. Copy the connection string
+4. Run migrations:
+   ```bash
+   psql $DATABASE_URL < backend/db/migrations/001_initial.sql
+   ```
 
-Neo4j requires at least 1GB RAM. If Docker is memory-constrained:
+### Neo4j Aura (Free Tier)
+
+1. Sign up at [neo4j.com/aura](https://neo4j.com/cloud/aura-free/)
+2. Create a free instance
+3. Note the connection URI and password
+4. Set `NEO4J_URI` and `NEO4J_PASSWORD` in environment
+
+### Qdrant Cloud (Free Tier)
+
+1. Sign up at [cloud.qdrant.io](https://cloud.qdrant.io)
+2. Create a free cluster
+3. Note the URL and API key
+4. Set `QDRANT_HOST` and `QDRANT_PORT` in environment
+
+### Redis Cloud (Free Tier)
+
+1. Sign up at [redis.com/try-free](https://redis.com/try-free/)
+2. Create a free database
+3. Note the host, port, and password
+4. Set `REDIS_HOST`, `REDIS_PORT` in environment
+
+---
+
+## Environment Variables for Production
+
 ```bash
-# Increase Docker memory to 4GB+ in Docker Desktop settings
+# Application
+APP_ENV=production
+CORS_ORIGINS=https://forgeminds.vercel.app
+
+# PostgreSQL (Neon)
+POSTGRES_HOST=ep-xxx.us-east-2.aws.neon.tech
+POSTGRES_PORT=5432
+POSTGRES_DB=forgeminds
+POSTGRES_USER=forgeminds
+POSTGRES_PASSWORD=<your-neon-password>
+
+# Neo4j (Aura)
+NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=<your-aura-password>
+
+# Qdrant (Cloud)
+QDRANT_HOST=xxx.aws.cloud.qdrant.io
+QDRANT_PORT=6333
+
+# Redis (Cloud)
+REDIS_HOST=redis-xxx.c1.us-east-1-2.ec2.cloud.redislabs.com
+REDIS_PORT=12345
+
+# Gemini
+GEMINI_API_KEY=<your-gemini-api-key>
+
+# Auth
+JWT_SECRET_KEY=<generate-a-strong-random-string>
 ```
 
-### Python Path
+---
 
-If `import shared` fails, ensure you're running from the project root:
-```bash
-# Correct — from project root
-uvicorn backend.main:app --reload
+## Verification Checklist
 
-# Incorrect — from backend/
-cd backend
-uvicorn main:app --reload  # shared imports will fail
-```
-
-### Tesseract Not Found
-
-If OCR fails with "tesseract not found":
-```bash
-# Windows: Download installer from https://github.com/UB-Mannheim/tesseract/wiki
-# Add to PATH or set TESSERACT_CMD in .env
-
-# Mac:
-brew install tesseract
-
-# Linux:
-sudo apt-get install tesseract-ocr
-```
+- [ ] Frontend loads at production URL
+- [ ] Backend `/api/health` returns `{"status": "healthy"}`
+- [ ] API docs accessible at `/docs`
+- [ ] User registration works
+- [ ] User login returns JWT token
+- [ ] Document upload processes correctly
+- [ ] AI chat returns responses
+- [ ] Knowledge graph queries return data
+- [ ] Search returns relevant results
