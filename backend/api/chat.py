@@ -17,9 +17,11 @@ from shared.interfaces import (
     SessionBrief,
     ErrorResponse,
     ErrorDetail,
+    UserResponse,
 )
 from shared.enums import AgentType
 from backend.services.agent_orchestrator import orchestrator
+from backend.api.auth import get_current_user
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -32,7 +34,10 @@ router = APIRouter(prefix="/api/chat", tags=['Chat'])
     response_model=ChatResponse,
     responses={500: {"model": ErrorResponse}},
 )
-async def chat(data: ChatRequest) -> ChatResponse:
+async def chat(
+    data: ChatRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> ChatResponse:
     """Send a message to the ForgeMinds copilot.
 
     Accepts a user message, optionally with a session_id and agent_type hint.
@@ -98,7 +103,10 @@ async def chat(data: ChatRequest) -> ChatResponse:
     response_model=List[ChatMessageResponse],
     responses={404: {"model": ErrorResponse}, 500: {"model": ErrorResponse}},
 )
-async def get_chat_history(session_id: str) -> List[ChatMessageResponse]:
+async def get_chat_history(
+    session_id: str,
+    current_user: UserResponse = Depends(get_current_user),
+) -> List[ChatMessageResponse]:
     """Retrieve the full message history for a chat session.
 
     Args:
@@ -154,6 +162,7 @@ async def get_chat_history(session_id: str) -> List[ChatMessageResponse]:
 async def list_sessions(
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
     limit: int = Query(20, ge=1, le=100, description="Results per page"),
+    current_user: UserResponse = Depends(get_current_user),
 ) -> List[SessionBrief]:
     """List all chat sessions with pagination.
 

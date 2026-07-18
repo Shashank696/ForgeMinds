@@ -4,15 +4,16 @@ Endpoints for document upload, listing, retrieval, deletion, and status.
 Assigned to: RUDRA
 """
 
-from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form, BackgroundTasks, Depends
 from typing import Optional, List
 
 from shared.interfaces import (
     DocumentUploadResponse, PaginatedResponse, DocumentDetailResponse,
-    EntityBrief, DocumentStatusResponse,
+    EntityBrief, DocumentStatusResponse, UserResponse,
 )
 from backend.services.document_service import DocumentService
 from backend.services.ingestion_service import IngestionService
+from backend.api.auth import get_current_user
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -27,6 +28,7 @@ async def upload_document(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     category: Optional[str] = Form(None),
+    current_user: UserResponse = Depends(get_current_user),
 ):
     """Upload a document for processing. Assigned to: RUDRA"""
     try:
@@ -52,6 +54,7 @@ async def list_documents(
     category: Optional[str] = None,
     status_filter: Optional[str] = None,
     search: Optional[str] = None,
+    current_user: UserResponse = Depends(get_current_user),
 ):
     """Assigned to: RUDRA"""
     try:
@@ -68,7 +71,10 @@ async def list_documents(
 
 
 @router.get("/{document_id}", response_model=DocumentDetailResponse)
-async def get_document(document_id: str):
+async def get_document(
+    document_id: str,
+    current_user: UserResponse = Depends(get_current_user),
+):
     """Assigned to: RUDRA"""
     try:
         return await document_service.get(document_id)
@@ -83,7 +89,10 @@ async def get_document(document_id: str):
 
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_document(document_id: str):
+async def delete_document(
+    document_id: str,
+    current_user: UserResponse = Depends(get_current_user),
+):
     """Assigned to: RUDRA"""
     try:
         await document_service.delete(document_id)
@@ -98,7 +107,10 @@ async def delete_document(document_id: str):
 
 
 @router.get("/{document_id}/entities", response_model=List[EntityBrief])
-async def get_document_entities(document_id: str):
+async def get_document_entities(
+    document_id: str,
+    current_user: UserResponse = Depends(get_current_user),
+):
     """Assigned to: RUDRA"""
     try:
         return await document_service.get_entities(document_id)
@@ -113,7 +125,10 @@ async def get_document_entities(document_id: str):
 
 
 @router.get("/{document_id}/status", response_model=DocumentStatusResponse)
-async def get_document_status(document_id: str):
+async def get_document_status(
+    document_id: str,
+    current_user: UserResponse = Depends(get_current_user),
+):
     """Assigned to: RUDRA"""
     try:
         return await document_service.get_status(document_id)

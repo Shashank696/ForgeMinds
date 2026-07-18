@@ -16,9 +16,11 @@ from shared.interfaces import (
     SearchResultItem,
     ErrorDetail,
     ErrorResponse,
+    UserResponse,
 )
 from shared.enums import SearchType
 from backend.services.search_service import search_service
+from backend.api.auth import get_current_user
 from backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -31,7 +33,10 @@ router = APIRouter(prefix="/api/search", tags=['Search'])
     response_model=SearchResponse,
     responses={500: {"model": ErrorResponse}},
 )
-async def search(data: SearchRequest) -> SearchResponse:
+async def search(
+    data: SearchRequest,
+    current_user: UserResponse = Depends(get_current_user),
+) -> SearchResponse:
     """Execute a search query across the ForgeMinds knowledge base.
 
     Routes the query to the appropriate search backend based on
