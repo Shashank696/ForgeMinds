@@ -1,154 +1,110 @@
-# ForgeMinds — Demo Scenarios Guide
+# ForgeMinds — Demo Video Resources & Script
 
-> **Prepared for:** ETAI Hackathon 2026 Judges  
-> **Version:** 1.0.0
-
----
-
-## Demo 1: Document Intelligence Pipeline
-
-**Goal:** Show the full journey from raw industrial document to AI-powered insights.
-
-### Steps
-
-1. **Login** → Navigate to the login page → Use demo credentials  
-   - Email: `demo@forgeminds.ai` / Password: `ForgeMinds2026!`
-
-2. **Upload Document** → Click "Documents" → Click "Upload"  
-   - Upload sample file: `data/sample_documents/inspection_reports/INS-2024-0001.txt`
-   - Observe: Upload progress, processing status changes (queued → processing → completed)
-
-3. **View Extracted Entities** → Click on the uploaded document  
-   - See: Equipment tags (P-101, V-200), regulations (ASME B31.3), dates, personnel
-   - See: Document metadata, chunk count, processing time
-
-4. **Explore Knowledge Graph** → Navigate to "Knowledge Graph"  
-   - Filter by entity type: Equipment
-   - Click on node "P-101" → See connected nodes (documents, regulations, personnel)
-   - Expand subgraph (depth=2) → Observe relationship network
-
-5. **Ask AI** → Navigate to "Chat"  
-   - Query: *"What maintenance recommendations exist for Pump P-101 based on the latest inspection?"*
-   - Observe: Agent indicator shows "Maintenance Agent"
-   - See: Response with citations [1], [2], confidence score (87%)
-   - Click citations to view source documents
+Use this resource kit to record your hackathon demo video. It contains copy-pasteable sample documents, exact search queries, AI chat prompts, and a step-by-step video script.
 
 ---
 
-## Demo 2: Predictive Maintenance & RCA
+## 📄 Part 1: Sample Documents to Upload
 
-**Goal:** Demonstrate AI-powered equipment failure prediction and root cause analysis.
+Create these files on your computer (save them as `.txt` files) so you can upload them during the demo video.
 
-### Steps
+### File 1: `INS-2024-0012_Pump_P101.txt`
+*(Save this as a text file. It represents a real inspection report with equipment tags, regulations, dates, and failure details).*
 
-1. **Dashboard Overview** → Navigate to "Dashboard"  
-   - See: Total documents processed, active equipment count, compliance score
-   - See: System health indicators (green = all services healthy)
+```text
+==================================================
+INDUSTRIAL INSPECTION REPORT: INS-2024-0012
+==================================================
+Facility: Houston Refining Plant A, Unit 3
+Date: October 15, 2024
+Inspector: Eng. Richard Martinez
+Subject: Centrifugal Pump P-101 Vibration Inspection
 
-2. **Maintenance Dashboard** → Navigate to "Maintenance"  
-   - See: Three alert levels (Critical, Warning, Info)
-   - Critical: "Pump P-101 bearing failure predicted in 14 days (92% confidence)"
-   - Observe: Equipment health cards with color-coded status
+EQUIPMENT DETAILS:
+- Equipment Tag: P-101
+- Type: Centrifugal Water Pump
+- Criticality: HIGH
 
-3. **Run Root Cause Analysis** → Click on P-101 alert → Click "Run RCA"  
-   - See: Root cause tree diagram
-   - See: Correlated past incidents from similar equipment
-   - See: AI-generated recommendations with action items
+FINDINGS:
+During routine vibration analysis on Pump P-101, abnormal radial acceleration was detected on the outboard bearing housing (DE bearing). 
+Vibration levels reached 8.2 mm/s RMS, exceeding the permissible threshold of 4.5 mm/s RMS specified under ASME B31.3 piping and machine standards. 
 
-4. **Ask AI about RCA** → Navigate to "Chat"  
-   - Query: *"What caused the bearing failure on Pump P-101 and what similar incidents have occurred?"*
-   - See: RCA Agent response with historical correlations and prevention recommendations
+INSPECTION SUMMARY:
+The bearing is showing signs of severe fatigue and lubrication degradation. Temperature readings indicated a peak of 85°C (thermal alarm limit is 70°C). 
 
----
+RECOMMENDATIONS:
+1. Schedule bearing replacement for P-101 within 14 days to prevent catastrophic lockup.
+2. Flush and replace lubrication oil immediately.
+3. Re-align the shaft coupling to ASME standards during the next scheduled maintenance window.
+==================================================
+```
 
-## Demo 3: Compliance Intelligence
+### File 2: `REG-ASME-B31-3_Extract.txt`
+*(Save this text file. It represents a regulatory standard).*
 
-**Goal:** Show automated compliance assessment with gap detection and evidence packaging.
+```text
+==================================================
+REGULATORY STANDARD EXTRACT: ASME B31.3 - SECTION 3
+==================================================
+Regulation Code: ASME B31.3
+Title: Process Piping Standards for Rotating Machinery
+Effective Date: January 1, 2022
+Compliance Authority: Industrial Safety Board
 
-### Steps
+REGULATION SUMMARY:
+Section 3.1.2: Vibration Thresholds for High-Criticality Pumps
+All active process pumps with high criticality must maintain vibration levels below 4.5 mm/s RMS. Any machine operating above 6.0 mm/s RMS must be placed on a 14-day mandatory repair window.
 
-1. **Compliance Dashboard** → Navigate to "Compliance"  
-   - See: Overall compliance score (94.2%) in circular gauge
-   - See: Per-regulation scores: ASME B31.3 (98%), API 510 (95%), OSHA 29 CFR (89%)
-
-2. **Gap Detection** → Click "View Gaps"  
-   - See: Compliance gap heatmap (color-coded grid)
-   - Identify: Red cells indicating critical gaps in OSHA 29 CFR
-
-3. **Evidence Package** → Click on a regulation → Click "Generate Evidence"  
-   - See: Collected evidence documents linked to specific clauses
-   - See: Gap descriptions with recommended actions
-
-4. **Ask AI about Compliance** → Navigate to "Chat"  
-   - Query: *"Are we fully compliant with ASME B31.3? Show me any gaps and the evidence."*
-   - See: Compliance Agent response with specific clause references and evidence links
-
----
-
-## Demo 4: Knowledge Graph Deep Dive
-
-**Goal:** Showcase the power of connected industrial knowledge.
-
-### Steps
-
-1. **Full Graph View** → Navigate to "Knowledge Graph"  
-   - See: Force-directed graph with color-coded nodes
-   - See: Statistics bar: "X Nodes | Y Relationships | 6 Entity Types"
-
-2. **Filter & Explore** → Use filter toggles  
-   - Toggle: Show only Equipment + Regulation nodes
-   - See: Which regulations apply to which equipment
-
-3. **Node Deep Dive** → Click on any equipment node  
-   - See: Node detail panel with all attributes
-   - See: Connected entities listed by relationship type
-   - See: Related documents, maintenance history, compliance status
-
-4. **Subgraph Query** → Select a node → Set depth to 3  
-   - See: Expanded network showing indirect relationships
-   - Discover: Hidden connections between seemingly unrelated equipment
+Section 3.4.1: Thermal Operating Limits
+The maximum allowable surface operating temperature for rotating shafts and bearing housings in hazardous environments is 70°C. Operations exceeding 80°C require an immediate safety shutdown audit.
+==================================================
+```
 
 ---
 
-## Demo 5: Hybrid Search & Analytics
+## 🎬 Part 2: Video Recording Script (3-Minute Walkthrough)
 
-**Goal:** Demonstrate multi-modal search and real-time analytics.
+Here is a step-by-step timeline of what to show on your screen and what to say.
 
-### Steps
+### Scene 1: The Landing Page & Dashboard (0:00 - 0:30)
+*   **On Screen:** Show the Landing Page, click "Sign In", type credentials (`demo@forgeminds.ai` / `ForgeMinds2026!`), and load the Dashboard. Hover over the stat cards and system health.
+*   **What to Say (Voiceover):**
+    > *"Welcome to ForgeMinds, an Industrial Intelligence Platform. Today, we are showcasing how we transform unstructured documentation into connected knowledge and predictive maintenance insights. We start on our premium dark-themed dashboard, which gives operators a real-time overview of processed documents, active equipment health, compliance scores, and overall system health."*
 
-1. **Search** → Navigate to "Search"  
-   - Query: *"bearing failures in pumps last 6 months"*
-   - See: Hybrid results combining vector similarity, graph connections, and keyword matches
-   - See: Relevance scores and result highlighting
+### Scene 2: Document Upload & Ingestion (0:30 - 1:10)
+*   **On Screen:** Click "Documents" in the sidebar. Click "Upload", choose your saved file `INS-2024-0012_Pump_P101.txt` and click upload. Show the processing animation, then click on the finished document to show the extracted entities (P-101, ASME B31.3, Richard Martinez, etc.) highlighted in the sidebar.
+*   **What to Say (Voiceover):**
+    > *"Let's upload a raw inspection report for Pump P-101. As we upload, the ForgeMinds ingestion pipeline automatically runs OCR, cleans the text, and performs Named Entity Recognition. In seconds, the platform extracts crucial metadata, identifying the equipment tag P-101, standard regulations like ASME B31.3, key inspection dates, and the inspector."*
 
-2. **Refine Search** → Apply filters  
-   - Filter by: Document type (Inspection Reports)
-   - Filter by: Date range (Last 6 months)
-   - See: Refined results with higher precision
+### Scene 3: The Knowledge Graph Explorer (1:10 - 1:40)
+*   **On Screen:** Click "Knowledge Graph" in the sidebar. Show the glowing network graph. Use the filters on top. Click on the node `P-101`, expand the connections, and show the panel details.
+*   **What to Say (Voiceover):**
+    > *"All these extracted entities are mapped into our Neo4j Knowledge Graph. Here, operators can explore the relationships between documents, machinery, failures, and regulations. If we filter by Equipment and click on P-101, we instantly see all documents referencing it, the regulations governing it, and the failure modes associated with its history."*
 
-3. **Analytics Dashboard** → Navigate to "Analytics"  
-   - See: Document processing trends (line chart)
-   - See: Entity distribution (bar chart)
-   - See: Query volume metrics, response times
+### Scene 4: Predictive Maintenance & RCA (1:40 - 2:20)
+*   **On Screen:** Click "Maintenance" in the sidebar. Show the critical predictive alert for P-101. Click "Run RCA" to show the root cause analysis breakdown and historical similarities.
+*   **What to Say (Voiceover):**
+    > *"Our platform goes beyond search. Under the Maintenance Intelligence module, the system predicts failures. Here, we see a critical alert: Pump P-101 bearing failure is predicted within 14 days with 92% confidence. By clicking Run Root Cause Analysis, our AI correlates this with historical documents and outlines the exact failure path, offering actionable repair steps."*
 
-4. **Ask AI** → Navigate to "Chat"  
-   - Query: *"Summarize all bearing-related failures across our pump fleet and identify any patterns"*
-   - See: Lessons Learned Agent response with pattern analysis across multiple documents
+### Scene 5: Hybrid AI Copilot & Wrap-Up (2:20 - 3:00)
+*   **On Screen:** Click "Chat" in the sidebar. Type the query (from Part 3 below), hit send, watch the response stream in, show the "Maintenance Agent" badge, hover over the citations, and click one.
+*   **What to Say (Voiceover):**
+    > *"Finally, we can talk to our data using our Multi-Agent RAG Copilot. We ask the system for maintenance recommendations for P-101. The orchestrator routes this to the Maintenance Agent. The agent queries our vector store and graph databases to generate a highly structured response, complete with direct document citations and a confidence score. This is ForgeMinds—bridging the gap between raw data and industrial safety. Thank you."*
 
 ---
 
-## Demo Credentials
+## 💬 Part 3: Search Queries & Chat Prompts to Show
 
-| Field | Value |
-|-------|-------|
-| **Email** | `demo@forgeminds.ai` |
-| **Password** | `ForgeMinds2026!` |
+Copy and paste these exact inputs during your recording:
 
-## Sample Data Included
+### Global Search Bar
+*   **Search Query:** `bearing failure P-101`
+*   **Result:** Shows the uploaded inspection report and related maintenance records with high relevance.
 
-| Category | Count | Examples |
-|----------|-------|---------|
-| Inspection Reports | 10 | INS-2024-0001 through INS-2024-0010 |
-| Maintenance Records | 15 | WO-2024-0001 through WO-2024-0015 |
-| Equipment Types | 5+ | Pumps, Compressors, Heat Exchangers, Vessels, Valves |
-| Regulations | 4+ | ASME B31.3, API 510, OSHA 29 CFR, ISO 14001 |
+### AI Copilot Chat Window
+*   **User Question:** `What are the maintenance recommendations for Pump P-101 based on our recent inspections, and are there any ASME B31.3 violations?`
+*   **Expected AI Response:** 
+    - Routes to the **Maintenance/Compliance Agent**.
+    - Mentions replacing the Outboard Bearing housing (DE bearing) within 14 days due to vibration of 8.2 mm/s.
+    - Notes a violation of ASME B31.3 section 3.1.2 because vibration exceeded 4.5 mm/s (operating at 8.2 mm/s) and temperature reached 85°C (exceeding the 70°C limit).
+    - Cites `INS-2024-0012` and `REG-ASME-B31-3`.
