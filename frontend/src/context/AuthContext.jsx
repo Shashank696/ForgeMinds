@@ -27,16 +27,20 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (data) => {
     const res = await apiLogin(data);
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    const { access_token, user: userData } = res.data;
+    localStorage.setItem('token', access_token);
+    setUser(userData);
     setIsAuthenticated(true);
+    return userData;
   };
 
   const register = async (data) => {
     const res = await apiRegister(data);
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data.user);
+    const { access_token, user: userData } = res.data;
+    localStorage.setItem('token', access_token);
+    setUser(userData);
     setIsAuthenticated(true);
+    return userData;
   };
 
   const logout = () => {
