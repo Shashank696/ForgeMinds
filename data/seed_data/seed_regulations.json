@@ -1,0 +1,102 @@
+[
+  {
+    "id": "reg-001",
+    "code": "OISD-STD-137",
+    "name": "Inspection, Maintenance and Repair of Pressure Vessels",
+    "authority": "Oil Industry Safety Directorate (OISD)",
+    "category": "Pressure Equipment",
+    "requirements": [
+      "All pressure vessels must have a valid fitness certificate",
+      "External inspection every 2 years",
+      "Internal inspection every 4 years",
+      "Hydrostatic test every 8 years or after major repair",
+      "Thickness measurement records must be maintained",
+      "Corrosion rate calculations must be documented",
+      "Relief valve testing annually"
+    ],
+    "applicable_equipment_types": ["vessel", "heat_exchanger", "tank"],
+    "effective_date": "2020-01-01"
+  },
+  {
+    "id": "reg-002",
+    "code": "OISD-STD-154",
+    "name": "Safety Aspects in Functional Design of Process Control Systems",
+    "authority": "Oil Industry Safety Directorate (OISD)",
+    "category": "Instrumentation & Control",
+    "requirements": [
+      "All safety critical instruments must have redundancy",
+      "Safety Instrumented Systems (SIS) must comply with IEC 61511",
+      "Proof testing of safety valves at specified intervals",
+      "Emergency Shutdown (ESD) testing every 6 months",
+      "Control system cybersecurity assessment annually"
+    ],
+    "applicable_equipment_types": ["instrument", "valve"],
+    "effective_date": "2019-06-01"
+  },
+  {
+    "id": "reg-003",
+    "code": "FACTORIES-ACT-1948-SEC-7A",
+    "name": "Factories Act 1948 — Section 7A: General Duties of Occupier",
+    "authority": "Ministry of Labour & Employment, Government of India",
+    "category": "Occupational Safety",
+    "requirements": [
+      "Provide and maintain plant and systems of work that are safe",
+      "Ensure safety and absence of risks in handling, storage, and transport",
+      "Provide information, instruction, training, and supervision for safety",
+      "Maintain working conditions that are safe and without health risks",
+      "Provide and maintain adequate means of egress"
+    ],
+    "applicable_equipment_types": ["pump", "valve", "compressor", "vessel", "heat_exchanger", "motor", "tank", "piping"],
+    "effective_date": "1948-04-01"
+  },
+  {
+    "id": "reg-004",
+    "code": "PESO-SMPV-2019",
+    "name": "PESO Static & Mobile Pressure Vessels (Unfired) Rules 2019",
+    "authority": "Petroleum and Explosives Safety Organisation (PESO)",
+    "category": "Pressure Equipment",
+    "requirements": [
+      "Registration of all unfired pressure vessels with PESO",
+      "Competent person inspection certificate before commissioning",
+      "Annual inspection by competent person",
+      "Hydraulic test every 5 years",
+      "Maintain logbook of all inspections and repairs",
+      "Report any accident or dangerous occurrence within 24 hours"
+    ],
+    "applicable_equipment_types": ["vessel", "heat_exchanger"],
+    "effective_date": "2019-07-01"
+  },
+  {
+    "id": "reg-005",
+    "code": "CPCB-EMISSION-2016",
+    "name": "CPCB Emission Standards for Petroleum Refineries",
+    "authority": "Central Pollution Control Board (CPCB)",
+    "category": "Environmental",
+    "requirements": [
+      "SOx emissions below 50 mg/Nm³ from process heaters",
+      "NOx emissions below 350 mg/Nm³",
+      "Particulate matter below 50 mg/Nm³",
+      "Continuous Emission Monitoring System (CEMS) mandatory",
+      "Quarterly emission reports to SPCB",
+      "Fugitive emission monitoring (LDAR) program"
+    ],
+    "applicable_equipment_types": ["vessel", "piping", "compressor"],
+    "effective_date": "2016-04-01"
+  },
+  {
+    "id": "reg-006",
+    "code": "IS-2825-1969",
+    "name": "IS 2825: Code for Unfired Pressure Vessels",
+    "authority": "Bureau of Indian Standards (BIS)",
+    "category": "Design Standards",
+    "requirements": [
+      "Design calculations per IS 2825 or ASME Section VIII",
+      "Material test certificates for all pressure parts",
+      "Welding procedure qualification records (WPR/PQR)",
+      "Non-destructive testing (NDT) as per design code",
+      "Nameplate with design data mandatory"
+    ],
+    "applicable_equipment_types": ["vessel", "heat_exchanger"],
+    "effective_date": "1969-01-01"
+  }
+]

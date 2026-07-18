@@ -1,0 +1,37 @@
+[
+  {
+    "email": "admin@forgeminds.com",
+    "password": "admin123",
+    "full_name": "System Administrator",
+    "role": "admin",
+    "department": "IT"
+  },
+  {
+    "email": "rajesh.kumar@refinery.com",
+    "password": "demo123",
+    "full_name": "Rajesh Kumar",
+    "role": "engineer",
+    "department": "Maintenance"
+  },
+  {
+    "email": "priya.sharma@refinery.com",
+    "password": "demo123",
+    "full_name": "Priya Sharma",
+    "role": "compliance_officer",
+    "department": "HSE"
+  },
+  {
+    "email": "anil.patel@refinery.com",
+    "password": "demo123",
+    "full_name": "Anil Patel",
+    "role": "operator",
+    "department": "Operations"
+  },
+  {
+    "email": "sunita.reddy@refinery.com",
+    "password": "demo123",
+    "full_name": "Sunita Reddy",
+    "role": "engineer",
+    "department": "Reliability"
+  }
+]

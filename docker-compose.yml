@@ -1,0 +1,133 @@
+version: "3.8"
+
+# ══════════════════════════════════════════════════
+#  ForgeMinds — Docker Compose
+#  Usage: docker compose up -d
+# ══════════════════════════════════════════════════
+
+services:
+
+  # ──────── PostgreSQL 16 ────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: forgeminds-postgres
+    environment:
+      POSTGRES_DB: forgeminds
+      POSTGRES_USER: forgeminds
+      POSTGRES_PASSWORD: forgeminds_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forgeminds"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - forgeminds-net
+
+  # ──────── Neo4j 5 Community ────────────────────
+  neo4j:
+    image: neo4j:5-community
+    container_name: forgeminds-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/forgeminds_dev
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "neo4j status || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - forgeminds-net
+
+  # ──────── Qdrant (Vector DB) ───────────────────
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: forgeminds-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - forgeminds-net
+
+  # ──────── Redis 7 ──────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: forgeminds-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - forgeminds-net
+
+  # ──────── Backend (FastAPI) ────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: forgeminds-backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./shared:/app/shared
+      - ./storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      neo4j:
+        condition: service_started
+      qdrant:
+        condition: service_started
+    networks:
+      - forgeminds-net
+
+  # ──────── Frontend (React + Vite) ──────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: forgeminds-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - forgeminds-net
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  qdrant_data:
+  redis_data:
+
+networks:
+  forgeminds-net:
+    driver: bridge
