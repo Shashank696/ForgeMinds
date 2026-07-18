@@ -1,12 +1,11 @@
-/**
- * ChartCard — Placeholder chart wrapper
- * Assigned to: DIL
- */
-export default function ChartCard({ title, children }) {
-  // TODO: Implement — DIL
+export default function ChartCard({ title, subtitle, children }) {
   return (
-    <div className="chartcard">
-      <p>ChartCard placeholder</p>
+    <div className="card">
+      <div style={{ marginBottom: 'var(--spacing-md)' }}>
+        <h4 className="text-base font-semibold">{title}</h4>
+        {subtitle && <p className="text-xs text-muted">{subtitle}</p>}
+      </div>
+      {children}
     </div>
   );
 }
