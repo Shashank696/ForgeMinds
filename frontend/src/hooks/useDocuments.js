@@ -1,45 +1,58 @@
-import { useState } from 'react';
-import { getDocuments, uploadDocument as apiUploadDocument, deleteDocument as apiDeleteDocument } from '../services/api';
+import { useState, useCallback } from 'react';
+import { fetchDocuments, uploadDocument as apiUpload, deleteDocument as apiDelete, fetchDocument } from '../services/api';
+import toast from 'react-hot-toast';
 
 export default function useDocuments() {
   const [documents, setDocuments] = useState([]);
+  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const refreshDocuments = async () => {
+  const refreshDocuments = useCallback(async (params = {}) => {
     setIsLoading(true);
     try {
-      const res = await getDocuments();
-      setDocuments(res.data);
+      const data = await fetchDocuments(params);
+      setDocuments(data.items || []);
+      setTotal(data.total || 0);
     } catch (e) {
-      console.error(e);
+      toast.error('Failed to load documents');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const uploadDocument = async (data) => {
-    setIsLoading(true);
+  const uploadDoc = useCallback(async (formData, onProgress) => {
     try {
-      await apiUploadDocument(data);
+      await apiUpload(formData, (e) => {
+        if (onProgress && e.total) {
+          onProgress(Math.round((e.loaded * 100) / e.total));
+        }
+      });
+      toast.success('Document uploaded successfully');
       await refreshDocuments();
     } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
+      toast.error('Upload failed');
+      throw e;
     }
-  };
+  }, [refreshDocuments]);
 
-  const deleteDocument = async (id) => {
-    setIsLoading(true);
+  const deleteDoc = useCallback(async (id) => {
     try {
-      await apiDeleteDocument(id);
+      await apiDelete(id);
+      toast.success('Document deleted');
       await refreshDocuments();
     } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
+      toast.error('Delete failed');
     }
-  };
+  }, [refreshDocuments]);
 
-  return { documents, isLoading, uploadDocument, deleteDocument, refreshDocuments };
+  const getDocumentDetail = useCallback(async (id) => {
+    try {
+      return await fetchDocument(id);
+    } catch (e) {
+      toast.error('Failed to load document details');
+      return null;
+    }
+  }, []);
+
+  return { documents, total, isLoading, uploadDocument: uploadDoc, deleteDoc, refreshDocuments, getDocumentDetail };
 }

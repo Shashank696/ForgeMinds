@@ -1,12 +1,11 @@
-/**
- * ConfidenceBadge — score as percentage with color coding
- * Assigned to: DIL
- */
+import { formatScore, getConfidenceColor } from '../../utils/formatters';
+
 export default function ConfidenceBadge({ score }) {
-  // TODO: Implement — DIL
+  if (score == null) return null;
+  const color = getConfidenceColor(score);
   return (
-    <div className="confidencebadge">
-      <p>ConfidenceBadge placeholder</p>
-    </div>
+    <span className="badge" style={{ background: `${color}22`, color }}>
+      {formatScore(score)} confidence
+    </span>
   );
 }
