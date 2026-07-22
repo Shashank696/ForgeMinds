@@ -199,7 +199,40 @@ export const fetchMaintenancePredictions = (params = {}) =>
   withMock(() => api.get('/maintenance/predictions', { params }), { predictions: mockPredictions });
 
 export const requestRCA = (data) =>
-  withMock(() => api.post('/maintenance/rca', data), mockRCAResponse);
+  withMock(() => api.post('/maintenance/rca', data), () => {
+    const query = (data.equipment_id || data.incident_description || '').toLowerCase();
+    
+    // Default response (Pump P-101 / Strainer Blockage)
+    let response = { ...mockRCAResponse };
+    
+    if (query.includes('c-301') || query.includes('compressor') || query.includes('valve')) {
+      response = {
+        root_causes: [
+          { cause: 'Valve plate fatigue cycling exceeding OEM limits', confidence: 0.94, evidence: [{ document_id: 'doc-004', document_title: 'Compressor Failure Report', chunk_text: 'Compressor C-301 experienced catastrophic bearing failure... Root cause: Valve fatigue.', page_number: 3, relevance_score: 0.89 }], similar_incidents: [{ id: 'inc-002', description: 'C-302 valve failure in 2021', date: '2021-08-11', equipment_tag: 'C-302', severity: 'critical' }] },
+          { cause: 'Insufficient lubrication to valve lifters', confidence: 0.45, evidence: [], similar_incidents: [] },
+        ],
+        recommended_actions: [
+          'Immediate inspection of all suction valves on C-301',
+          'Review OEM recommended replacement intervals',
+          'Upgrade to titanium alloy valve plates'
+        ]
+      };
+    } else if (query.includes('hx-401') || query.includes('heat exchanger') || query.includes('fouling')) {
+      response = {
+        root_causes: [
+          { cause: 'Process fluid temperature exceeding design limits causing rapid coking', confidence: 0.82, evidence: [{ document_id: 'doc-008', document_title: 'Heat Exchanger OEM Manual', chunk_text: 'Temperatures above 180C will accelerate coking on tube side.', page_number: 145, relevance_score: 0.91 }], similar_incidents: [] },
+          { cause: 'Inadequate chemical dosing in cooling water', confidence: 0.61, evidence: [], similar_incidents: [] },
+        ],
+        recommended_actions: [
+          'Schedule immediate hydro-jetting of tube side',
+          'Optimize process fluid temperature setpoints to stay below 175C',
+          'Increase dosing rate of anti-foulant chemicals'
+        ]
+      };
+    }
+    
+    return response;
+  });
 
 export const fetchMaintenanceAlerts = () =>
   withMock(() => api.get('/maintenance/alerts'), { alerts: mockAlerts });
