@@ -105,7 +105,15 @@ export const fetchDocuments = (params = {}) =>
 export const fetchDocument = (id) =>
   withMock(() => api.get(`/documents/${id}`), mockDocumentDetail);
 
-export const deleteDocument = (id) => api.delete(`/documents/${id}`);
+export const deleteDocument = (id) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      mockDocuments.items = mockDocuments.items.filter(doc => doc.id !== id);
+      mockDocuments.total -= 1;
+      resolve({ data: { message: "Deleted successfully" } });
+    }, 400);
+  });
+};
 
 export const fetchDocumentEntities = (id) =>
   withMock(() => api.get(`/documents/${id}/entities`), mockDocumentDetail.entities);
