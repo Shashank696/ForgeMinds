@@ -63,7 +63,6 @@ export const getMe = () => api.get('/auth/me');
 // ═══════════════════════════════════════════════════════
 export const uploadDocument = (formData, onProgress) => {
   return new Promise((resolve) => {
-    // Simulate upload progress for the demo video
     let progress = 0;
     const interval = setInterval(() => {
       progress += 20;
@@ -71,7 +70,29 @@ export const uploadDocument = (formData, onProgress) => {
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
-          resolve({ data: { message: "Document uploaded successfully", id: "doc-999" } });
+          // Get the filename from formData if possible
+          const file = formData.get('file');
+          const filename = file ? file.name : 'new_document.txt';
+          const size = file ? file.size : 12450;
+          
+          // Add the fake document to our mock data so it appears in the list!
+          const newDoc = {
+            id: 'doc-' + Math.floor(Math.random() * 10000),
+            filename: filename,
+            original_filename: filename,
+            file_type: 'text/plain',
+            document_category: 'inspection_report',
+            file_size_bytes: size > 0 ? size : 45000, // Fallback size if 0
+            page_count: 1,
+            upload_status: 'completed',
+            processing_stage: 'graph_linked',
+            entity_count: 12,
+            created_at: new Date().toISOString()
+          };
+          mockDocuments.items.unshift(newDoc);
+          mockDocuments.total += 1;
+          
+          resolve({ data: { message: "Document uploaded successfully", id: newDoc.id } });
         }, 500);
       }
     }, 200);
