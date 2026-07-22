@@ -61,11 +61,22 @@ export const getMe = () => api.get('/auth/me');
 // ═══════════════════════════════════════════════════════
 //  Documents
 // ═══════════════════════════════════════════════════════
-export const uploadDocument = (formData, onProgress) =>
-  api.post('/documents/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: onProgress,
+export const uploadDocument = (formData, onProgress) => {
+  return new Promise((resolve) => {
+    // Simulate upload progress for the demo video
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 20;
+      if (onProgress) onProgress({ loaded: progress, total: 100 });
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          resolve({ data: { message: "Document uploaded successfully", id: "doc-999" } });
+        }, 500);
+      }
+    }, 200);
   });
+};
 
 export const fetchDocuments = (params = {}) =>
   withMock(() => api.get('/documents', { params }), mockDocuments);
